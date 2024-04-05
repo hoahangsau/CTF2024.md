@@ -130,7 +130,81 @@ Function **dynamic_xor_decrypt()** trả về decrypted_text bằng cách XOR ng
 FLAG: picoCTF{custom_d2cr0pt6d_e4530597}
 
 #**C3**
+Đoạn code encrypt được cho như sau
+<pre>
+import sys
+chars = ""
+from fileinput import input
+for line in input():
+  chars += line
 
+lookup1 = "\n \"#()*+/1:=[]abcdefghijklmnopqrstuvwxyz"
+lookup2 = "ABCDEFGHIJKLMNOPQRSTabcdefghijklmnopqrst"
+
+out = ""
+prev = 0
+for char in chars:
+  cur = lookup1.index(char)
+  out += lookup2[(cur - prev) % 40]
+  prev = cur
+
+sys.stdout.write(out)
+</pre> 
+
+Để decrypt thì ta cần phải lấy ký tự từ lookup2.index() sau đó tìm ngược index của lookup1 bằng cách _(cur + prev) % 40_
+<pre>
+
+lookup1 = "\n \"#()*+/1:=[]abcdefghijklmnopqrstuvwxyz"
+lookup2 = "ABCDEFGHIJKLMNOPQRSTabcdefghijklmnopqrst"
+cipher = "DLSeGAGDgBNJDQJDCFSFnRBIDjgHoDFCFtHDgJpiHtGDmMAQFnRBJKkBAsTMrsPSDDnEFCFtIbEDtDCIbFCFtHTJDKerFldbFObFCFtLBFkBAAAPFnRBJGEkerFlcPgKkImHnIlATJDKbTbFOkdNnsgbnJRMFnRBNAFkBAAAbrcbTKAkOgFpOgFpOpkBAAAAAAAiClFGIPFnRBaKliCgClFGtIBAAAAAAAOgGEkImHnIl"
+back = ""
+prev = 0
+
+for char in cipher:
+    cur = lookup2.index(char)
+    back += lookup1[(cur + prev) % 40]
+    prev = (cur + prev) % 40
+
+print(back)
+
+</pre>
+
+Output của script trên sẽ là một đoạn code khác:
+<pre>
+#asciiorder
+#fortychars
+#selfinput
+#pythontwo
+
+chars = ""
+from fileinput import input
+for line in input():
+    chars += line
+b = 1 / 1
+
+for i in range(len(chars)):
+    if i == b * b * b:
+        print chars[i] #prints
+        b += 1 / 1
+</pre>
+
+Đọc các comment thì mình thấy có hint *selfinput , nên mình đã lưu đoạn code trên với tên input.txt để input vào chính đoạn code đó.
+<pre>
+import fileinput
+
+chars = ""
+with fileinput.input(files=('input.txt')) as file:
+    for line in file:
+        chars += line
+    b = 1 / 1
+
+    for i in range(len(chars)):
+        if i == b * b * b:
+            print(chars[i])  
+            b += 1 / 1
+</pre>
+
+Chạy đoạn script trên ta sẽ có được FLAG: picoCTF{adlibs}
 
 
 
